@@ -7,3 +7,5 @@ cryptography==39.0.1
 flask-login
 flask_cors
 geopy
+openai
+azure-identity
