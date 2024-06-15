@@ -3,6 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from geopy.geocoders import Nominatim
 from openai import OpenAI
 import os
+from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///locations.db'
@@ -10,6 +11,12 @@ db = SQLAlchemy(app)
 geolocator = Nominatim(user_agent="StarTrek")
 # Configure OpenAI API Key
 client = OpenAI(api_key='sk-proj-6c1pIe8N10Hwt87G6eW7T3BlbkFJlyHBdEYskBnEKw3qXaYL')
+
+app.config['UPLOAD_FOLDER'] = 'uploads/'
+
+if not os.path.exists(app.config['UPLOAD_FOLDER']):
+    os.makedirs(app.config['UPLOAD_FOLDER'])
+
 
 
 class Location(db.Model):
@@ -58,6 +65,19 @@ def chat():
 
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+    
+@app.route('/vocal', methods=['POST'])
+def vocal():
+    if 'file' not in request.files:
+        return jsonify({'error': 'No file part'})
+    file = request.files['file']
+    if file.filename == '':
+        return jsonify({'error': 'No selected file'})
+    if file:
+        filename = secure_filename(file.filename)
+        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        return jsonify({'reply': 'Audio received'})
+    return jsonify({'error': 'File upload failed'})
 
 if __name__ == '__main__':
     #db.create_all()

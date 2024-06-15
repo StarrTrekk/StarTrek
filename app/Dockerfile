@@ -13,5 +13,7 @@ EXPOSE 5000
 # Installation des dépendances Python
 RUN pip install --no-cache-dir -r requirements.txt
 
+# mount volume ./uploads to /app/uploads
+VOLUME /app/upload
 
 CMD ["python3", "app.py"]

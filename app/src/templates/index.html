@@ -5,193 +5,20 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-    <style>
-        body {
-            background-color: #e4e5e6;
-            color: #333;
-            margin: 0;
-            padding: 0;
-            font-family: 'Arial', sans-serif;
-        }
-        #map {
-            width: 100%;
-            height: 100vh;
-            position: relative;
-            z-index: 1;
-        }
-        .leaflet-control-attribution {
-            display: none !important;
-        }
-        #chat {
-            position: absolute;
-            bottom: 70px; /* Positionné juste au-dessus du bouton bot avec une marge inférieure */
-            right: 20px;
-            width: 300px;
-            max-height: 50vh;
-            background-color: transparent;
-            border-radius: 10px;
-            box-shadow: none;
-            transition: all 0.3s ease-in-out;
-            transform: translateY(100%);
-            opacity: 0;
-            z-index: 2;
-            display: flex;
-            flex-direction: column;
-            pointer-events: none;
-        }
-        #chat.show {
-            transform: translateY(0);
-            opacity: 1;
-            pointer-events: auto;
-        }
-        #chat-messages {
-            flex-grow: 1;
-            overflow-y: auto;
-            margin-bottom: 10px;
-        }
-        .message {
-            margin: 5px 0;
-            padding: 10px;
-            border-radius: 20px;
-            max-width: 80%;
-            word-wrap: break-word;
-            display: inline-block;
-            clear: both;
-        }
-        .message.user {
-            background-color: #3498db; /* Bleu */
-            color: white;
-            align-self: flex-end;
-            float: right;
-        }
-        .message.bot {
-            background-color: #e4e5e6;
-            color: #333;
-            align-self: flex-start;
-            float: left;
-        }
-        .message.error {
-            background-color: #f44336; /* Rouge */
-            color: white;
-        }
-        #chat input {
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            width: 100%;
-            box-sizing: border-box;
-        }
-        #chat input:focus {
-            outline: none;
-            border-color: #87CEFA;
-        }
-        #sidebar-toggle {
-            position: absolute;
-            bottom: 20px;
-            right: 20px;
-            background-color: #9b59b6; /* Violet */
-            border: none;
-            color: white;
-            padding: 10px;
-            border-radius: 50%;
-            cursor: pointer;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-            z-index: 3;
-            transition: all 0.3s ease-in-out;
-        }
-        #sidebar-toggle i {
-            font-size: 20px;
-        }
-        @media (max-width: 600px) {
-            #chat {
-                max-width: calc(100% - 40px);
-                padding: 10px;
-                margin-bottom: 10px;
-            }
-            #chat-messages {
-                margin-bottom: 5px;
-            }
-            .message {
-                padding: 8px;
-            }
-            #sidebar-toggle {
-                bottom: 10px;
-                right: 10px;
-                padding: 8px;
-            }
-            #sidebar-toggle i {
-                font-size: 18px;
-            }
-        }
-    </style>
 </head>
 <body>
     <div id="map"></div>
     <div id="chat">
         <div id="chat-messages"></div>
         <input type="text" id="chat-input" placeholder="Tapez votre message...">
+        <button id="record-button"><i class="fas fa-microphone"></i></button>
     </div>
     <button id="sidebar-toggle">
         <i class="fas fa-robot"></i>
     </button>
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.min.js"></script>
-    <script>
-        var map = L.map('map').setView([0, 0], 2);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
-        var marker = L.marker([0, 0]).addTo(map);
-
-        // Obtenir la localisation actuelle de l'utilisateur
-        navigator.geolocation.getCurrentPosition(function(position) {
-            var lat = position.coords.latitude;
-            var lng = position.coords.longitude;
-            map.setView([lat, lng], 8); // Zoom moins bas
-            marker.setLatLng([lat, lng]);
-        });
-
-        document.getElementById('sidebar-toggle').addEventListener('click', function() {
-            document.getElementById('chat').classList.toggle('show');
-        });
-
-        document.getElementById('chat-input').addEventListener('keydown', function(event) {
-            if (event.key === 'Enter') {
-                var input = event.target.value;
-                var messages = document.getElementById('chat-messages');
-
-                var userMessage = document.createElement('div');
-                userMessage.className = 'message user';
-                userMessage.textContent = input;
-                messages.appendChild(userMessage);
-
-                sendMessage(input);
-
-                event.target.value = '';
-                messages.scrollTop = messages.scrollHeight;
-            }
-        });
-
-        async function sendMessage(message) {
-            const response = await fetch('/chat', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ message: message })
-            });
-            const data = await response.json();
-            const messages = document.getElementById('chat-messages');
-            if (data.reply) {
-                var botMessage = document.createElement('div');
-                botMessage.className = 'message bot';
-                botMessage.textContent = data.reply;
-                messages.appendChild(botMessage);
-            } else {
-                var errorMessage = document.createElement('div');
-                errorMessage.className = 'message error';
-                errorMessage.textContent = data.error;
-                messages.appendChild(errorMessage);
-            }
-            messages.scrollTop = messages.scrollHeight;
-        }
-    </script>
+    <script src="{{ url_for('static', filename='scripts.js') }}"></script>
 </body>
 </html>

@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  web:
+    build: app
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    environment:
+      - SQLALCHEMY_DATABASE_URI=mysql+pymysql://root:password@db/users_db
+      - HOST=passkey-magic.thexp.ai
+      - PORT_PASSKEY=5173
+    volumes:
+      - ./app/src:/app/src
+      - ./app/uploads:/app/uploads
