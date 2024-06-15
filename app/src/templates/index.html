@@ -20,6 +20,9 @@
             position: relative;
             z-index: 1;
         }
+        .leaflet-control-attribution {
+            display: none !important;
+        }
         #chat {
             position: absolute;
             bottom: 70px; /* Positionné juste au-dessus du bouton bot avec une marge inférieure */
@@ -57,7 +60,7 @@
             clear: both;
         }
         .message.user {
-            background-color: #8e44ad;
+            background-color: #3498db; /* Bleu */
             color: white;
             align-self: flex-end;
             float: right;
@@ -83,7 +86,7 @@
             position: absolute;
             bottom: 20px;
             right: 20px;
-            background-color: #87CEFA;
+            background-color: #9b59b6; /* Violet */
             border: none;
             color: white;
             padding: 10px;
@@ -131,11 +134,17 @@
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.min.js"></script>
     <script>
-        var map = L.map('map').setView([48.856614, 2.352222], 12);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        }).addTo(map);
-        var marker = L.marker([48.856614, 2.352222]).addTo(map);
+        var map = L.map('map').setView([0, 0], 2);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+        var marker = L.marker([0, 0]).addTo(map);
+
+        // Obtenir la localisation actuelle de l'utilisateur
+        navigator.geolocation.getCurrentPosition(function(position) {
+            var lat = position.coords.latitude;
+            var lng = position.coords.longitude;
+            map.setView([lat, lng], 8); // Zoom moins bas
+            marker.setLatLng([lat, lng]);
+        });
 
         document.getElementById('sidebar-toggle').addEventListener('click', function() {
             document.getElementById('chat').classList.toggle('show');
@@ -150,11 +159,40 @@
                 userMessage.className = 'message user';
                 userMessage.textContent = input;
                 messages.appendChild(userMessage);
-                
-                var botMessage = document.createElement('div');
-                botMessage.className = 'message bot';
-                botMessage.textContent = input.trim().toLowerCase() === 'coco' ? 'good' : 'bad';
-                messages.appendChild(botMessage);
+
+                var coords = input.split(':');
+                if (coords.length === 2) {
+                    var lat = parseFloat(coords[0].trim());
+                    var lng = parseFloat(coords[1].trim());
+                    if (!isNaN(lat) && !isNaN(lng)) {
+                        var botMessage = document.createElement('div');
+                        botMessage.className = 'message bot';
+                        var locationButton = document.createElement('button');
+                        locationButton.textContent = 'Aller à ' + lat + ', ' + lng;
+                        locationButton.style.backgroundColor = '#3498db';
+                        locationButton.style.color = 'white';
+                        locationButton.style.border = 'none';
+                        locationButton.style.borderRadius = '10px';
+                        locationButton.style.padding = '10px';
+                        locationButton.style.cursor = 'pointer';
+                        locationButton.addEventListener('click', function() {
+                            map.setView([lat, lng], 8); // Zoom moins bas
+                            marker.setLatLng([lat, lng]);
+                        });
+                        botMessage.appendChild(locationButton);
+                        messages.appendChild(botMessage);
+                    } else {
+                        var botMessage = document.createElement('div');
+                        botMessage.className = 'message bot';
+                        botMessage.textContent = 'Invalid coordinates';
+                        messages.appendChild(botMessage);
+                    }
+                } else {
+                    var botMessage = document.createElement('div');
+                    botMessage.className = 'message bot';
+                    botMessage.textContent = 'Please enter coordinates in the format: lat:lng';
+                    messages.appendChild(botMessage);
+                }
                 
                 event.target.value = '';
                 messages.scrollTop = messages.scrollHeight;
