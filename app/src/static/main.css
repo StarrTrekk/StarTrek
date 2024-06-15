@@ -62,6 +62,10 @@ body {
     align-self: flex-start;
     float: left;
 }
+.message.bot.audio-message {
+    background-color: transparent;
+    padding: 0;
+}
 .message.error {
     background-color: #f44336; /* Rouge */
     color: white;
@@ -97,7 +101,7 @@ body {
     position: absolute;
     bottom: 20px;
     right: 20px;
-    background-color: #391f54; /* Violet */
+    background-color: #9b59b6; /* Violet */
     border: none;
     color: white;
     padding: 10px;
@@ -130,4 +134,9 @@ body {
     #sidebar-toggle i {
         font-size: 18px;
     }
+}
+.audio-message audio {
+    width: 100%;
+    display: block;
+    border-radius: 10px;
 }

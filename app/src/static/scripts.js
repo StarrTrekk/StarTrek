@@ -78,20 +78,27 @@ document.addEventListener('DOMContentLoaded', function() {
                     method: 'POST',
                     body: formData
                 });
-                const data = await response.json();
+
+                const responseBlob = await response.blob();
+                const responseUrl = URL.createObjectURL(responseBlob);
                 const messages = document.getElementById('chat-messages');
-                if (data.reply) {
-                    var botMessage = document.createElement('div');
-                    botMessage.className = 'message bot';
-                    botMessage.textContent = data.reply;
-                    messages.appendChild(botMessage);
-                } else {
-                    var errorMessage = document.createElement('div');
-                    errorMessage.className = 'message error';
-                    errorMessage.textContent = data.error;
-                    messages.appendChild(errorMessage);
-                }
+                
+                const botMessage = document.createElement('div');
+                botMessage.className = 'message bot audio-message';
+                
+                const audioElement = document.createElement('audio');
+                audioElement.controls = true;
+                audioElement.src = responseUrl;
+                
+                botMessage.appendChild(audioElement);
+                messages.appendChild(botMessage);
+                
                 messages.scrollTop = messages.scrollHeight;
+
+                // play the audio
+                audioElement.play();
+                
+                
             };
 
             mediaRecorder.start();

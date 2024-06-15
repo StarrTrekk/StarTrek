@@ -1,9 +1,10 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, send_file
 from flask_sqlalchemy import SQLAlchemy
 from geopy.geocoders import Nominatim
 from openai import OpenAI
 import os
 from werkzeug.utils import secure_filename
+from io import BytesIO
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///locations.db'
@@ -18,6 +19,23 @@ if not os.path.exists(app.config['UPLOAD_FOLDER']):
     os.makedirs(app.config['UPLOAD_FOLDER'])
 
 
+def audio_to_text(audio_file):
+    audio_file= open(audio_file, "rb")
+    transcription = client.audio.transcriptions.create(
+    model="whisper-1", 
+    file=audio_file
+    )
+    return transcription.text
+
+def text_to_audio(text):
+    audio = client.audio.speech.create(
+            model="tts-1",
+            voice="alloy",
+            input= text, 
+        )
+
+    #we have now a audio file that we can play
+    audio.stream_to_file("reponse.wav")
 
 class Location(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -76,7 +94,29 @@ def vocal():
     if file:
         filename = secure_filename(file.filename)
         file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-        return jsonify({'reply': 'Audio received'})
+        
+        # Convert audio to text
+        text = audio_to_text(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+
+        # Get response from OpenAI
+        try:
+            completion = client.chat.completions.create(
+                model="gpt-3.5-turbo",
+                messages=[
+                    {"role": "system", "content": "Tu es Star-trek un expert de trek, ton role est de répondre aux questions des utilisateurs sur les treks en france. Tu peux aussi donner des conseils sur les treks à faire en france. Mais toujours répondre d'une façon très sobre"},
+                    {"role": "user", "content": text}
+                ]
+            )
+            #transform the response to a json object
+
+            # Convert text to audio
+            text_to_audio(completion.choices[0].message.content)
+
+            return send_file("reponse.wav", as_attachment=True)
+
+        except Exception as e:
+            return jsonify({'error': str(e)}), 500
+        
     return jsonify({'error': 'File upload failed'})
 
 if __name__ == '__main__':
