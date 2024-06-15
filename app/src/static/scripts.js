@@ -38,6 +38,7 @@ document.addEventListener('DOMContentLoaded', function() {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ message: message })
         });
+
         const data = await response.json();
         const messages = document.getElementById('chat-messages');
         if (data.reply) {
@@ -53,7 +54,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         messages.scrollTop = messages.scrollHeight;
     }
-
+    
     // Gestion de l'enregistrement vocal
     const recordButton = document.getElementById('record-button');
     let mediaRecorder;
@@ -98,7 +99,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 // play the audio
                 audioElement.play();
                 
-                
+
             };
 
             mediaRecorder.start();

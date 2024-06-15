@@ -9,3 +9,5 @@ flask_cors
 geopy
 openai
 azure-identity
+Flask[async]
+asyncio
