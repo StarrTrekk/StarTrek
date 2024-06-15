@@ -6,3 +6,5 @@ Werkzeug==2.2.3
 cryptography==39.0.1
 flask-login
 flask_cors 
+openai
+azure-identity
