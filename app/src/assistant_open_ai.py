@@ -59,20 +59,16 @@ async def get_answer(assistant_id, thread_id):
     message_content = messages.data[0].content[0].text.value
     return message_content
 
+thread_id = "thread_7A32BY0HnfYmSmHy7631bKR0"
 
-if __name__ == "__main__":
-    async def main():
-    
-        # Create assistant and thread before entering the loop
-        #thread = await client.beta.threads.create()
-        thread_id = "thread_7A32BY0HnfYmSmHy7631bKR0"
-        while True:
-            question = input("How may I help you today? \n")
-            if "exit" in question.lower():
-                break
-            
-            # Add message to thread
-            await add_message_to_thread(thread_id, question)
-            message_content = await get_answer(assistant_id , thread_id=thread_id)
-            print(message_content)
-    asyncio.run(main())
+
+async def hab(question):
+        # Add message to thread
+        await add_message_to_thread(thread_id, question)
+        message_content = await get_answer(assistant_id , thread_id=thread_id)
+        #print(message_content)
+        return message_content
+       
+varo = asyncio.run(hab("Comment je vais dans le sud ? "))
+print(varo)
+
