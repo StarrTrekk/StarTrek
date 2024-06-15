@@ -24,6 +24,9 @@
             if (data.reply) {
                 chatBox.innerHTML += `<p><strong>You:</strong> ${userInput}</p>`;
                 chatBox.innerHTML += `<p><strong>Bot:</strong> ${data.reply}</p>`;
+                if (data.audio) {
+                    chatBox.innerHTML += `<audio controls><source src="${data.audio}" type="audio/mpeg"></audio>`;
+                }
             } else {
                 chatBox.innerHTML += `<p><strong>Error:</strong> ${data.error}</p>`;
             }

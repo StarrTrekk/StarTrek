@@ -31,8 +31,20 @@ def chat():
             ]
         )
         #transform the response to a json object
-        return jsonify({'reply': completion.choices[0].message.content})
+        reply_text = completion.choices[0].message.content
 
+        return jsonify({'reply': reply_text})
+        #transform the response to a audio:
+        audio = client.audio.speech.create(
+            model="tts-1",
+            voice="alloy",
+            input= reply_text,
+        )
+        
+
+        #return the audio
+
+        return jsonify({'reply': reply_text, 'audio': audio['url']})
     except Exception as e:
         return jsonify({'error'}) 
         return jsonify({'error': str(e)}), 500
