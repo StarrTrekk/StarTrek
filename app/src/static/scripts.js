@@ -95,10 +95,10 @@ document.addEventListener('DOMContentLoaded', function() {
             };
 
             mediaRecorder.start();
-            recordButton.innerHTML = '<i class="fas fa-stop"></i>';
+            recordButton.classList.add('recording');
         } else {
             mediaRecorder.stop();
-            recordButton.innerHTML = '<i class="fas fa-microphone"></i>';
+            recordButton.classList.remove('recording');
         }
     });
 });

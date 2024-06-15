@@ -16,7 +16,7 @@ body {
 }
 #chat {
     position: absolute;
-    bottom: 70px;
+    bottom: 70px; /* Positionné juste au-dessus du bouton bot avec une marge inférieure */
     right: 20px;
     width: 300px;
     max-height: 50vh;
@@ -51,7 +51,7 @@ body {
     clear: both;
 }
 .message.user {
-    background-color: #3498db;
+    background-color: #3498db; /* Bleu */
     color: white;
     align-self: flex-end;
     float: right;
@@ -63,14 +63,19 @@ body {
     float: left;
 }
 .message.error {
-    background-color: #f44336;
+    background-color: #f44336; /* Rouge */
     color: white;
 }
+#chat-input-container {
+    display: flex;
+    align-items: center;
+    margin-right: 10px; /* Déplace légèrement vers la gauche */
+}
 #chat input {
+    flex-grow: 1;
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 4px;
-    width: calc(100% - 50px);
     box-sizing: border-box;
 }
 #chat input:focus {
@@ -78,27 +83,21 @@ body {
     border-color: #87CEFA;
 }
 #record-button {
-    position: absolute;
-    right: 10px;
-    bottom: 20px;
-    background-color: #9b59b6;
+    background: none;
     border: none;
-    color: white;
-    padding: 10px;
-    border-radius: 50%;
+    color: #777; /* Gris foncé */
     cursor: pointer;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-    z-index: 3;
-    transition: all 0.3s ease-in-out;
+    margin-left: 10px;
+    font-size: 24px; /* Agrandir légèrement */
 }
-#record-button i {
-    font-size: 20px;
+#record-button.recording {
+    color: #f44336; /* Rouge */
 }
 #sidebar-toggle {
     position: absolute;
     bottom: 20px;
     right: 20px;
-    background-color: #9b59b6;
+    background-color: #391f54; /* Violet */
     border: none;
     color: white;
     padding: 10px;
