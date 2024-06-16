@@ -7,5 +7,5 @@ Votre accompagnateur et guide virtuel de poche. StarTrek vous permet de découvr
 
 ## Lancez le projet
 ```bash
-./run.sh
+docker-compose up -d
 ```
